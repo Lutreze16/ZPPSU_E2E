@@ -1,11 +1,16 @@
 <?php
-include('config.php');
-
 session_start();
+
+if (isset($_SESSION['student_id'])) {
+    header("Location: student_dashboard.php");
+    exit();
+}
 
 $errorMessage = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    include('config.php');
+
     $input_student_id = isset($_POST["student_id"]) ? $_POST["student_id"] : "";
     $input_password = isset($_POST["password"]) ? $_POST["password"] : "";
 
@@ -21,8 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stored_password = $row['password'];
 
         if (password_verify($input_password, $stored_password)) {
-            // Password is correct, set session and redirect
-            $_SESSION['student_id'] = $input_student_id;
+            $_SESSION['student_id'] = $row['student_id'];
             header("Location: student_dashboard.php");
             exit();
         } else {
@@ -31,9 +35,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $errorMessage = "User not found";
     }
-}
 
-$conn->close();
+    $conn->close();
+}
 ?>
 
 <!DOCTYPE html>
