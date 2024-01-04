@@ -10,11 +10,11 @@ if (!isset($_SESSION['student_id']) || !isset($_SESSION['course'])) {
 }
 
 // Get user information from the session
-$student_id = $_SESSION['student_id'];
+$session_student_id = $_SESSION['student_id']; // Use a different variable name
 $course = $_SESSION['course'];
 
 // Query to retrieve user information
-$sql = "SELECT first_name, middle_name, last_name, student_id, course FROM students WHERE student_id = '$student_id' AND course = '$course'";
+$sql = "SELECT first_name, middle_name, last_name, student_id, course FROM students WHERE student_id = '$session_student_id' AND course = '$course'";
 $result = $conn->query($sql);
 
 if ($result === false) {
