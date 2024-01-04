@@ -7,7 +7,6 @@ $studentID = isset($_SESSION['student_id']) ? $_SESSION['student_id'] : null;
 $firstName = "";
 $lastName = "";
 $studentIDNumber = "";
-$year_level = "";
 $course = "";
 $email = "";
 $skills = "";
@@ -15,7 +14,7 @@ $profileImage = "img/profile.png"; // Default image
 
 // Fetch student information
 if ($studentID) {
-    $sql = "SELECT first_name, last_name, student_id, year_level, course, email, skills, profile_image FROM students WHERE id = $studentID";
+    $sql = "SELECT first_name, last_name, student_id, course, email, skills, profile_image FROM students WHERE id = $studentID";
     $result = $conn->query($sql);
 
     if ($result && $result->num_rows > 0) {
@@ -23,7 +22,6 @@ if ($studentID) {
         $firstName = $studentInfo['first_name'];
         $lastName = $studentInfo['last_name'];
         $studentIDNumber = $studentInfo['student_id'];
-        $year_level = $studentInfo['year_level'];  // Update to $year_level
         $course = $studentInfo['course'];
         $email = $studentInfo['email'];
         $skills = $studentInfo['skills'];
@@ -44,7 +42,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $newLastName = $_POST['new_last_name'];
     $newSkills = $_POST['new_skills'];
     $newEmail = $_POST['new_email']; // Add this line to capture the new email
-    $newYearLevel = $_POST['new_year_level']; // Add this line to capture the new year level
 
     if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
         $imageTmpName = $_FILES['profile_image']['tmp_name'];
@@ -69,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Add more fields as needed and update the SQL query
-    $sqlUpdate = "UPDATE students SET first_name = '$newFirstName', last_name = '$newLastName', skills = '$newSkills', email = '$newEmail', year_level = '$newYearLevel' WHERE id = $studentID";
+    $sqlUpdate = "UPDATE students SET first_name = '$newFirstName', last_name = '$newLastName', skills = '$newSkills', email = '$newEmail' WHERE id = $studentID";
 
     if ($conn->query($sqlUpdate) === TRUE) {
         // Update successful
@@ -79,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $email = $newEmail; // Update the email variable
 
         // Fetch updated student information
-        $sqlUpdatedInfo = "SELECT first_name, last_name, student_id, year_level, course, email, skills, profile_image FROM students WHERE id = $studentID";
+        $sqlUpdatedInfo = "SELECT first_name, last_name, student_id, course, email, skills, profile_image FROM students WHERE id = $studentID";
         $resultUpdatedInfo = $conn->query($sqlUpdatedInfo);
 
         if ($resultUpdatedInfo && $resultUpdatedInfo->num_rows > 0) {
@@ -87,7 +84,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $firstName = $studentInfo['first_name'];
             $lastName = $studentInfo['last_name'];
             $studentIDNumber = $studentInfo['student_id'];
-            $year_level = $studentInfo['year_level'];
             $course = $studentInfo['course'];
             $email = $studentInfo['email'];
             $skills = $studentInfo['skills'];
@@ -161,16 +157,7 @@ $conn->close();
                 <input type="text" name="new_last_name" value="<?php echo $lastName; ?>" required id="new_last_name">
 
                 <label for="new_student_id">New Student ID:</label>
-                <input type="text" name="new_student_id" value="<?php echo $studentIDNumber; ?>" id="new_student_id">
-
-                <label for="new_year_level">New Year Level:</label>
-                    <select name="new_year_level" id="new_year_level" required>
-                    <option value="1st year" <?php echo ($year_level == '1st year') ? 'selected' : ''; ?>>1st year</option>
-                    <option value="2nd year" <?php echo ($year_level == '2nd year') ? 'selected' : ''; ?>>2nd year</option>
-                    <option value="3rd year" <?php echo ($year_level == '3rd year') ? 'selected' : ''; ?>>3rd year</option>
-                    <option value="4th year" <?php echo ($year_level == '4th year') ? 'selected' : ''; ?>>4th year</option>
-                    <option value="5th year" <?php echo ($year_level == '5th year') ? 'selected' : ''; ?>>5th year</option>
-                </select>
+                <input type="text" name="new_student_id" value="<?php echo $studentIDNumber; ?>" id="new_student_id">
 
                 <label for="new_course">New Course:</label>
                 <input type="text" name="new_course" value="<?php echo $course; ?>" required id="new_course">
