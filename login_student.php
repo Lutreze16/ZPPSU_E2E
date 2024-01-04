@@ -3,38 +3,36 @@ include('config.php');
 
 session_start();
 
-$errorMessage = ""; // Initialize the error message variable
+$errorMessage = "";
 
-// Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $input_student_id = $_POST["student_id"];
-    $input_course = $_POST["course"];
+    $input_student_id = isset($_POST["student_id"]) ? $_POST["student_id"] : "";
+    $input_password = isset($_POST["password"]) ? $_POST["password"] : "";
 
-    // Query to retrieve user information
-    $sql = "SELECT first_name, middle_name, last_name, student_id, course FROM students WHERE student_id = '$input_student_id' AND course = '$input_course'";
+    $sql = "SELECT student_id, password FROM students WHERE student_id = '$input_student_id'";
     $result = $conn->query($sql);
 
     if ($result === false) {
         die("Query failed: " . $conn->error);
     }
 
-    // Check if the user exists
     if ($result->num_rows == 1) {
-        // Fetch user data
         $row = $result->fetch_assoc();
-        $first_name = $row['first_name'];
-        $middle_name = $row['middle_name'];
-        $last_name = $row['last_name'];
-        $student_id = $row['student_id'];
-        $course = $row['course'];
+        $stored_password = $row['password'];
 
-        // Output user information or perform other actions as needed
+        if (password_verify($input_password, $stored_password)) {
+            // Password is correct, set session and redirect
+            $_SESSION['student_id'] = $input_student_id;
+            header("Location: student_dashboard.php");
+            exit();
+        } else {
+            $errorMessage = "Invalid password";
+        }
     } else {
-        $errorMessage = "User not found!";
+        $errorMessage = "User not found";
     }
 }
 
-// Close the database connection
 $conn->close();
 ?>
 
@@ -44,7 +42,6 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | For Students</title>
-    <link rel="stylesheet" type="text/css" href="css/login.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -118,11 +115,7 @@ $conn->close();
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <input type="number" name="student_id" placeholder="Student ID No." required>
             <br>
-            <label>Course:</label>
-            <select name="course" required>
-                <option value="BS-InfoTech">BS Information Technology</option>
-                <!-- Include other course options here -->
-            </select>
+            <input type="password" name="password" placeholder="Password" required>
             <br>
             <button type="submit">Login</button>
         </form>
