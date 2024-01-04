@@ -3,34 +3,38 @@ include('config.php');
 
 session_start();
 
-// Check if the connection is successful
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Check if the user is logged in
+if (!isset($_SESSION['student_id']) || !isset($_SESSION['course'])) {
+    header("Location: index.php");
+    exit();
 }
 
-$errorMessage = ""; // Variable to store error message
+// Get user information from the session
+$student_id = $_SESSION['student_id'];
+$course = $_SESSION['course'];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $student_id = isset($_POST["student_id"]) ? $_POST["student_id"] : "";
-    $course = isset($_POST["course"]) ? $_POST["course"] : "";
+// Query to retrieve user information
+$sql = "SELECT first_name, middle_name, last_name, student_id, course FROM students WHERE student_id = '$student_id' AND course = '$course'";
+$result = $conn->query($sql);
 
-    // Validate user credentials
-    $sql = "SELECT * FROM students WHERE student_id = '$student_id' AND course = '$course'";
-    $result = $conn->query($sql);
+if ($result === false) {
+    die("Query failed: " . $conn->error);
+}
 
-    if ($result === false) {
-        die("Query failed: " . $conn->error);
-    }
+// Check if the user exists
+if ($result->num_rows == 1) {
+    // Fetch user data
+    $row = $result->fetch_assoc();
+    $first_name = $row['first_name'];
+    $middle_name = $row['middle_name'];
+    $last_name = $row['last_name'];
+    $student_id = $row['student_id'];
+    $course = $row['course'];
 
-    if ($result->num_rows == 1) {
-        // Successful login
-        $_SESSION['student_id'] = $student_id;
-        $_SESSION['course'] = $course;
-        header("Location: student_dashboard.php");
-        exit();
-    } else {
-        $errorMessage = "Invalid login credentials.";
-    }
+    // Output user information or perform other actions as needed
+
+} else {
+    echo "User not found!";
 }
 
 // Close the database connection
