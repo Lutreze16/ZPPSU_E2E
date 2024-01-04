@@ -1,15 +1,26 @@
 <?php
 include('config.php');
 
-session_start(); // Start session to store user information
+session_start();
+
+// Check if the connection is successful
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$errorMessage = ""; // Variable to store error message
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $student_id = isset($_POST["student_id"]) ? $_POST["student_id"] : "";
     $course = isset($_POST["course"]) ? $_POST["course"] : "";
 
-    // Validate user credentials (you might want to use password hashing for security)
+    // Validate user credentials
     $sql = "SELECT * FROM students WHERE student_id = '$student_id' AND course = '$course'";
     $result = $conn->query($sql);
+
+    if (!$result) {
+        die("Query failed: " . $conn->error);
+    }
 
     if ($result->num_rows == 1) {
         // Successful login
@@ -22,6 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+// Close the database connection
 $conn->close();
 ?>
 
@@ -47,7 +59,7 @@ $conn->close();
             <br>
             <button type="submit">Login</button>
         </form>
-        <?php if (isset($errorMessage)) echo "<p>$errorMessage</p>"; ?>
+        <?php if (!empty($errorMessage)) echo "<p>$errorMessage</p>"; ?>
     </div>
 </body>
 </html>
