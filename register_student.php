@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($conn->query($sql) === TRUE) {
         $successMessage = "Registration successful!";
-        header("Location: student_dashboard.php");
+        header("Location: login_student.php"); // Redirect to login_student.php
         exit();
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
