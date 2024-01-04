@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "SELECT * FROM students WHERE student_id = '$student_id' AND course = '$course'";
     $result = $conn->query($sql);
 
-    if (!$result) {
+    if ($result === false) {
         die("Query failed: " . $conn->error);
     }
 
