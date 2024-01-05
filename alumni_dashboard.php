@@ -1,4 +1,4 @@
-<?php
+<!--<?php
 include('config.php');
 
 session_start();
@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sqlUpdate = "UPDATE alumni SET alumni_first_name = ?, alumni_last_name = ?, alumni_email = ?, alumni_graduation_year = ?, alumni_program = ? WHERE alumni_email = ?";
     $stmtUpdate = $conn->prepare($sqlUpdate);
     $stmtUpdate->bind_param("ssssss", $newFirstName, $newLastName, $newEmail, $newGraduationYear, $newProgram, $alumniEmail);
-    
+
     if ($stmtUpdate->execute()) {
         // Update successful
         $firstName = $newFirstName;
@@ -114,10 +114,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $stmtUpdate->close();
+
+    // Insert job application
+    $companyName = $_POST['company_name'];
+    $applicationDate = $_POST['application_date'];
+    $status = $_POST['status'];
+    $notes = $_POST['notes'];
+
+    // Prepare and execute the SQL statement
+    $sqlInsertApplication = "INSERT INTO job_applications (alumni_id, company_name, application_date, status, notes) VALUES (?, ?, ?, ?, ?)";
+    $stmtInsertApplication = $conn->prepare($sqlInsertApplication);
+    $stmtInsertApplication->bind_param("issss", $alumniID, $companyName, $applicationDate, $status, $notes);
+
+    if ($stmtInsertApplication->execute()) {
+        echo "Job application inserted successfully.";
+    } else {
+        echo "Error inserting job application: " . $stmtInsertApplication->error;
+    }
+
+    $stmtInsertApplication->close();
+
+    // Fetch existing job applications
+    $sqlFetchApplications = "SELECT * FROM job_applications WHERE alumni_id = ?";
+    $stmtFetchApplications = $conn->prepare($sqlFetchApplications);
+    $stmtFetchApplications->bind_param("i", $alumniID);
+    $stmtFetchApplications->execute();
+    $resultApplications = $stmtFetchApplications->get_result();
+
+    if ($resultApplications && $resultApplications->num_rows > 0) {
+        while ($application = $resultApplications->fetch_assoc()) {
+            // Display each job application
+            echo "<p><strong>Company:</strong> " . $application['company_name'] . "</p>";
+            echo "<p><strong>Date:</strong> " . $application['application_date'] . "</p>";
+            echo "<p><strong>Status:</strong> " . $application['status'] . "</p>";
+            echo "<p><strong>Notes:</strong> " . $application['notes'] . "</p>";
+            echo "<hr>";
+        }
+    } else {
+        echo "<p>No job applications found.</p>";
+    }
+
+    $stmtFetchApplications->close();
 }
 
 $conn->close();
 ?>
+-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -129,34 +171,37 @@ $conn->close();
 <body>
 
     <div class="tab">
-        <div class="info">
-            <img id="profileImage" src="<?php echo $profileImage; ?>">
+        <div class="information">
+            <!--<img id="profileImage" src="<?php echo $profileImage; ?>">-->
+            <img id="profileImage" src="img/user.png">
             <h2><?php echo $firstName . ' ' . $lastName; ?></h2>
-            <h3>Email: <?php echo $email; ?></h3>
-            <h3>Graduation Year: <?php echo $graduationYear; ?></h3>
-            <h3>Program: <?php echo $program; ?></h3>
+            <h4>Email: <?php echo $email; ?></h4>
+            <h4>Graduation Year: <?php echo $graduationYear; ?></h4>
+            <h4>Program: <?php echo $program; ?></h4>
         </div>
         <button class="tablinks" onclick="openTab(event, 'MyInfo')" id="defaultOpen">My Information</button>
         <button class="tablinks" onclick="openTab(event, 'JobApplications')">Job Applications</button>
         <button class="tablinks" onclick="openTab(event, 'CareerResources')">Career Resources</button>
         <button class="tablinks" onclick="openTab(event, 'AlignmentMonitoring')">Alignment Monitoring</button>
         <div class="logout">
-            <button onclick="location.href='index.html'">Log Out</button>
+            <button class="btn" onclick="location.href='index.html'">Log Out</button>
         </div>
     </div>
 
     <!-- Main Content -->
 
     <div id="MyInfo" class="tabcontent">
-        <h3>Alumni Dashboard</h3>
-        <p>View and update your personal information here.</p>
-        <p>First Name: <?php echo $firstName; ?></p>
-        <p>Last Name: <?php echo $lastName; ?></p>
-        <p>Email: <?php echo $email; ?></p>
-        <p>Graduation Year: <?php echo $graduationYear; ?></p>
-        <p>Program: <?php echo $program; ?></p>
+        <div class="info">
+            <h1>Alumni Dashboard</h1>
+            <p>View and update your personal information here.</p>
+            <p>First Name: <?php echo $firstName; ?></p>
+            <p>Last Name: <?php echo $lastName; ?></p>
+            <p>Email: <?php echo $email; ?></p>
+            <p>Graduation Year: <?php echo $graduationYear; ?></p>
+            <p>Program: <?php echo $program; ?></p>
+        </div>
 
-        <button onclick="openUpdateForm()">Update Information</button>
+        <button class="btn" onclick="openUpdateForm()">Update Information</button>
 
         <div id="updateForm" style="display: none;">
             <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
@@ -186,19 +231,78 @@ $conn->close();
     </div>
 
     <div id="JobApplications" class="tabcontent">
-        <h3>Job Applications</h3>
-        <p>Track your personal job applications here.</p>
+        <h1>Job Applications</h1>
+        <button class="btn" onclick="openJobApplicationForm()">Add New Application</button>
+
+        <div id="jobApplicationForm" style="display: none;">
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                <label for="company_name">Company Name:</label>
+                <input type="text" name="company_name" required>
+    
+                <label for="application_date">Application Date:</label>
+                <input type="date" name="application_date" required>
+    
+                <label for="status">Status:</label>
+                <select name="status" required>
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                </select>
+    
+                <label for="notes">Notes:</label>
+                <textarea name="notes" rows="4" cols="50"></textarea>
+    
+                <input type="submit" value="Add Application">
+            </form>
+        </div>
     </div>
 
     <div id="CareerResources" class="tabcontent">
-        <h3>Career Resources</h3>
+        <h1>Career Resources</h1>
         <p>Explore resources to enhance your career knowledge.</p>
+        <ul>
+            <li><a href="https://example1.com" target="_blank">Resource 1</a></li>
+            <li><a href="https://example2.com" target="_blank">Resource 2</a></li>
+            <li><a href="https://example3.com" target="_blank">Resource 3</a></li>
+        </ul>
     </div>
+    
 
     <div id="AlignmentMonitoring" class="tabcontent">
-        <h3>Alignment Monitoring</h3>
-        <p>Provide a section to monitor and update career alignment with your courses.</p>
+        <h1>Alignment Monitoring</h1>
+    
+        <div id="employmentDetails">
+            <label for="employment_status">Are you currently employed?</label>
+            <select id="employment_status" onchange="toggleAlignmentForm()">
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+    
+        <div id="alignmentForm" style="display: none;">
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                <label for="course_name">Course Name:</label>
+                <input type="text" name="course_name" required>
+    
+                <label for="alignment_status">Alignment Status:</label>
+                <select name="alignment_status" required>
+                    <option value="Aligned">Aligned</option>
+                    <option value="Partially Aligned">Partially Aligned</option>
+                    <option value="Not Aligned">Not Aligned</option>
+                </select>
+    
+                <label for="alignment_notes">Alignment Notes:</label>
+                <textarea name="alignment_notes" rows="4" cols="50"></textarea>
+    
+                <input type="submit" value="Update Alignment">
+            </form>
+        </div>
+    
+        <div id="alignmentButtonContainer">
+            <button class="btn" onclick="toggleAlignmentForm()">Update Alignment</button>
+        </div>
     </div>
+    
 
     <script>
         // Function to open or close the update form
@@ -239,7 +343,36 @@ $conn->close();
 
         // Get the element with id="defaultOpen" and click on it
         document.getElementById("defaultOpen").click();
-    </script>
+        
+        // Function to open or close the alignment form
+        function openAlignmentForm() {
+            var alignmentForm = document.getElementById("alignmentForm");
+            if (alignmentForm.style.display === "none" || alignmentForm.style.display === "") {
+                alignmentForm.style.display = "block";
+            } else {
+                alignmentForm.style.display = "none";
+            }
+        }
 
+        function toggleAlignmentForm() {
+            var employmentStatus = document.getElementById("employment_status").value;
+            var alignmentForm = document.getElementById("alignmentForm");
+
+            if (employmentStatus === "yes") {
+                alignmentForm.style.display = "block";
+            } else {
+                alignmentForm.style.display = "none";
+            }
+        }
+
+        function openJobApplicationForm() {
+            var jobApplicationForm = document.getElementById("jobApplicationForm");
+            if (jobApplicationForm.style.display === "none" || jobApplicationForm.style.display === "") {
+                jobApplicationForm.style.display = "block";
+            } else {
+                jobApplicationForm.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>
