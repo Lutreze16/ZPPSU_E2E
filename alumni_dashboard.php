@@ -14,9 +14,9 @@ $lastName = "";
 $email = "";
 $graduationYear = "";
 $program = "";
-$profileImage = "img/profile.png"; // Default image
+$profileImage = "img/profile.png";
 
-// Fetch alumni information using $alumniEmail...
+// Fetch alumni information using $alumniEmail
 $sql = "SELECT alumni_first_name, alumni_last_name, alumni_email, alumni_graduation_year, alumni_program, alumni_profile_image FROM alumni WHERE alumni_email = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $alumniEmail);
@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Update successful
         $firstName = $newFirstName;
         $lastName = $newLastName;
-        $email = $newEmail; // Update the email variable
+        $email = $newEmail;
         $graduationYear = $newGraduationYear;
         $program = $newProgram;
 
@@ -100,8 +100,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $email = $alumniInfo['alumni_email'];
             $graduationYear = $alumniInfo['alumni_graduation_year'];
             $program = $alumniInfo['alumni_program'];
-
-            // Update the profile image variable
             $profileImage = isset($alumniInfo['alumni_profile_image']) ? $alumniInfo['alumni_profile_image'] : $profileImage;
         } else {
             // Handle error or redirect to login if no alumni is found
