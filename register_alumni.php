@@ -30,14 +30,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $conn->close();
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alumni Registration</title>
-    <link rel="stylesheet" type="text/css" href="css/alumni.css">
+    <link rel="stylesheet" type="text/css" href="css/signup.css">
 </head>
 <body>
     <div class="container">
@@ -45,9 +44,9 @@ $conn->close();
         <form action="process_alumni.php" method="post">
             <!-- Alumni registration form fields go here -->
             <input type="text" name="first_name" placeholder="First Name" required>
-            <input type="text" name="last_name" placeholder="Last Name" required><br>
-            <input type="email" name="email" placeholder="Email" required><br>
-            <input type="number" name="graduation_year" placeholder="Graduation Year" required><br>
+            <input type="text" name="last_name" placeholder="Last Name" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="number" name="graduation_year" placeholder="Graduation Year" required>
             <label>Program:</label>
             <select name="program">
                 <option value="BS-InfoTech">BS Information Technology</option>
@@ -57,7 +56,6 @@ $conn->close();
                 <option value="BSCE">Bachelor of Science in Civil Engineering</option>
                 <option value="BSME">Bachelor of Science in Marine Engineering</option>
             </select>
-            <br>
             <button type="submit">Register</button>
         </form>
     </div>
