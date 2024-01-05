@@ -1,4 +1,4 @@
-<!--<?php
+<?php
 // Include config.php for database connection
 include('config.php');
 
@@ -17,7 +17,7 @@ if ($result) {
 
 // Close the database connection
 mysqli_close($conn);
-?>-->
+?>
 
 <!DOCTYPE html>
 <html lang="en">
