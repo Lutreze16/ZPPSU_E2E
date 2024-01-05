@@ -91,6 +91,7 @@ h1, label {
 
 h4 {
     color: #f1f1f1;
+    margin: 5px;
 }
 
 /* Add these styles to your existing CSS */
@@ -114,7 +115,8 @@ form label {
     font-weight: bold;
 }
 
-.tabcontent form input[type="text"],
+form input[type="text"],
+form input[type="date"],
 form select {
     width: 100%;
     padding: 8px;
@@ -135,7 +137,7 @@ form select {
 }
 
 .tabcontent form input[type="submit"]:hover {
-    background-color: #dcab2d;
+    color: #dcab2d;
 }
 
 /* Center the form within the tab content */
@@ -234,4 +236,36 @@ textarea {
     padding: 10px;
     margin: 5px;
     resize: none;
+}
+
+/* Alumni Dashboard */
+
+#CareerResources {
+    padding: 15px;
+    background-color: #f1f1f1;
+}
+
+#CareerResources p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+#CareerResources ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#CareerResources li {
+    margin-bottom: 10px;
+}
+
+#CareerResources a {
+    text-decoration: none;
+    color: #a20000;
+    font-weight: bold;
+}
+
+#CareerResources a:hover {
+    text-decoration: underline;
 }
