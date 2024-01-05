@@ -1,124 +1,23 @@
-<?php
+<!--<?php
+// Include config.php for database connection
 include('config.php');
 
-session_start(); // Add this line
+// Sample query to fetch students from the database (replace with your actual query)
+$sql = "SELECT * FROM students";
+$result = mysqli_query($conn, $sql);
 
-$alumniEmail = isset($_SESSION['alumni_email']) ? $_SESSION['alumni_email'] : null;
-
-if (!$alumniEmail) {
-    header("Location: login_alumni.php");
-    exit();
-}
-
-$firstName = "";
-$lastName = "";
-$email = "";
-$graduationYear = "";
-$program = "";
-$profileImage = "img/profile.png"; // Default image
-
-// Fetch alumni information using $alumniEmail...
-$sql = "SELECT alumni_first_name, alumni_last_name, alumni_email, alumni_graduation_year, alumni_program, alumni_profile_image FROM alumni WHERE alumni_email = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $alumniEmail);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result && $result->num_rows > 0) {
-    $alumniInfo = $result->fetch_assoc();
-    $firstName = $alumniInfo['alumni_first_name'];
-    $lastName = $alumniInfo['alumni_last_name'];
-    $email = $alumniInfo['alumni_email'];
-    $graduationYear = $alumniInfo['alumni_graduation_year'];
-    $program = $alumniInfo['alumni_program'];
-
-    // Check if 'alumni_profile_image' key exists before accessing it
-    $profileImage = isset($alumniInfo['alumni_profile_image']) ? $alumniInfo['alumni_profile_image'] : $profileImage;
+// Check if there are results from the database
+if ($result) {
+    // Fetch students from the database
+    $students_from_database = mysqli_fetch_all($result, MYSQLI_ASSOC);
 } else {
-    // Handle error or redirect to login if no alumni is found
-    header("Location: login_alumni.php");
-    exit();
+    // Handle the case where there are no results or an error occurred
+    $students_from_database = array();
 }
 
-$stmt->close();
-
-// Handle profile update and image upload
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $newFirstName = $_POST['new_first_name'];
-    $newLastName = $_POST['new_last_name'];
-    $newEmail = $_POST['new_email'];
-    $newGraduationYear = $_POST['new_graduation_year'];
-    $newProgram = $_POST['new_program'];
-
-    if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
-        $imageTmpName = $_FILES['profile_image']['tmp_name'];
-        $imageName = $_FILES['profile_image']['name'];
-        $imagePath = "ZPPSU-E2E/uploads/" . $imageName;
-
-        // Ensure the directory exists
-        if (!file_exists("ZPPSU-E2E/uploads/")) {
-            mkdir("ZPPSU-E2E/uploads/", 0755, true);
-        }
-
-        if (!move_uploaded_file($imageTmpName, $imagePath)) {
-            error_log("File move failed: " . $imagePath);
-        }
-
-        // Update the profile image path in the database
-        $sqlUpdateImage = "UPDATE alumni SET alumni_profile_image = ? WHERE alumni_email = ?";
-        $stmtUpdateImage = $conn->prepare($sqlUpdateImage);
-        $stmtUpdateImage->bind_param("ss", $imagePath, $alumniEmail);
-        $stmtUpdateImage->execute();
-        $stmtUpdateImage->close();
-
-        // Update the profile image variable
-        $profileImage = $imagePath;
-    }
-
-    // Add more fields as needed and update the SQL query
-    $sqlUpdate = "UPDATE alumni SET alumni_first_name = ?, alumni_last_name = ?, alumni_email = ?, alumni_graduation_year = ?, alumni_program = ? WHERE alumni_email = ?";
-    $stmtUpdate = $conn->prepare($sqlUpdate);
-    $stmtUpdate->bind_param("ssssss", $newFirstName, $newLastName, $newEmail, $newGraduationYear, $newProgram, $alumniEmail);
-    
-    if ($stmtUpdate->execute()) {
-        // Update successful
-        $firstName = $newFirstName;
-        $lastName = $newLastName;
-        $email = $newEmail; // Update the email variable
-        $graduationYear = $newGraduationYear;
-        $program = $newProgram;
-
-        // Fetch updated alumni information
-        $stmtUpdatedInfo = $conn->prepare("SELECT alumni_first_name, alumni_last_name, alumni_email, alumni_graduation_year, alumni_program, alumni_profile_image FROM alumni WHERE alumni_email = ?");
-        $stmtUpdatedInfo->bind_param("s", $alumniEmail);
-        $stmtUpdatedInfo->execute();
-        $resultUpdatedInfo = $stmtUpdatedInfo->get_result();
-
-        if ($resultUpdatedInfo && $resultUpdatedInfo->num_rows > 0) {
-            $alumniInfo = $resultUpdatedInfo->fetch_assoc();
-            $firstName = $alumniInfo['alumni_first_name'];
-            $lastName = $alumniInfo['alumni_last_name'];
-            $email = $alumniInfo['alumni_email'];
-            $graduationYear = $alumniInfo['alumni_graduation_year'];
-            $program = $alumniInfo['alumni_program'];
-
-            // Update the profile image variable
-            $profileImage = isset($alumniInfo['alumni_profile_image']) ? $alumniInfo['alumni_profile_image'] : $profileImage;
-        } else {
-            // Handle error or redirect to login if no alumni is found
-        }
-
-        $stmtUpdatedInfo->close();
-    } else {
-        // Handle update error
-        echo "Error updating record: " . $stmtUpdate->error;
-    }
-
-    $stmtUpdate->close();
-}
-
-$conn->close();
-?>
+// Close the database connection
+mysqli_close($conn);
+?>-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -130,17 +29,17 @@ $conn->close();
 <body>
 
     <div class="tab">
-        <div class="info">
-            <img id="profileImage" src="<?php echo $profileImage; ?>">
-            <h2><?php echo $firstName . ' ' . $lastName; ?></h2>
-            <h3>Email: <?php echo $email; ?></h3>
-            <h3>Graduation Year: <?php echo $graduationYear; ?></h3>
-            <h3>Program: <?php echo $program; ?></h3>
+        <div class="information">
+            <!--<img id="profileImage" src="<?php echo $profileImage; ?>">-->
+            <img id="profileImage" src="img/user.png">
+            <h4>Admin123</h4>
         </div>
-        <button class="tablinks" onclick="openTab(event, 'MyInfo')" id="defaultOpen">My Information</button>
-        <button class="tablinks" onclick="openTab(event, 'JobApplications')">Job Applications</button>
-        <button class="tablinks" onclick="openTab(event, 'CareerResources')">Career Resources</button>
-        <button class="tablinks" onclick="openTab(event, 'AlignmentMonitoring')">Alignment Monitoring</button>
+        <button class="tablinks" onclick="openTab(event, 'StudentManagement')" id="defaultOpen">Student Management</button>
+        <button class="tablinks" onclick="openTab(event, 'AcademicRecords')">Academic Records</button>
+        <button class="tablinks" onclick="openTab(event, 'CareerGuidance')">Career Guidance</button>
+        <button class="tablinks" onclick="openTab(event, 'JobPostings')">Job Postings</button>
+        <button class="tablinks" onclick="openTab(event, 'ProgressMonitoring')">Progress Monitoring</button>
+        <button class="tablinks" onclick="openTab(event, 'AlumniTracking')">Alumni Tracking</button>
         <div class="logout">
             <button onclick="location.href='index.html'">Log Out</button>
         </div>
@@ -148,99 +47,322 @@ $conn->close();
 
     <!-- Main Content -->
 
-    <div id="MyInfo" class="tabcontent">
-        <h3>Alumni Dashboard</h3>
-        <p>View and update your personal information here.</p>
-        <p>First Name: <?php echo $firstName; ?></p>
-        <p>Last Name: <?php echo $lastName; ?></p>
-        <p>Email: <?php echo $email; ?></p>
-        <p>Graduation Year: <?php echo $graduationYear; ?></p>
-        <p>Program: <?php echo $program; ?></p>
-
-        <button onclick="openUpdateForm()">Update Information</button>
-
-        <div id="updateForm" style="display: none;">
+    <div id="StudentManagement" class="tabcontent">
+        <h1>Student Management</h1>
+        <!-- Add New Student Form -->
+        <div id="addStudentForm" style="display: none;">
+            <h2>Add New Student</h2>
             <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
-                <!-- Profile Image Upload -->
-                <label for="profile_image">Profile Image:</label>
-                <input type="file" name="profile_image" accept="image/*" onchange="updateProfileImage(this)" id="profile_image">
+                <label for="new_first_name">First Name:</label>
+                <input type="text" name="new_first_name" required>
 
-                <label for="new_first_name">New First Name:</label>
-                <input type="text" name="new_first_name" value="<?php echo $firstName; ?>" required id="new_first_name">
+                <label for="new_last_name">Last Name:</label>
+                <input type="text" name="new_last_name" required>
 
-                <label for="new_last_name">New Last Name:</label>
-                <input type="text" name="new_last_name" value="<?php echo $lastName; ?>" required id="new_last_name">
+                <label for="new_course">Course:</label>
+                <input type="text" name="new_course" required>
 
-                <label for="new_email">New Email:</label>
-                <input type="text" name="new_email" value="<?php echo $email; ?>" required id="new_email">
+                <label for="new_year_level">Year Level:</label>
+                <input type="text" name="new_year_level" required>
 
-                <label for="new_graduation_year">New Graduation Year:</label>
-                <input type="text" name="new_graduation_year" value="<?php echo $graduationYear; ?>" required id="new_graduation_year">
+                <label for="new_skills">Skills:</label>
+                <input type="text" name="new_skills" required>
 
-                <label for="new_program">New Program:</label>
-                <input type="text" name="new_program" value="<?php echo $program; ?>" required id="new_program">
+                <label for="new_email">Email:</label>
+                <input type="text" name="new_email" required>
 
-                <input type="submit" value="Update">
+                <label for="new_password">Password:</label>
+                <input type="password" name="new_password" required>
+
+                <label for="new_profile_image">Profile Image:</label>
+                <input type="file" name="new_profile_image" accept="image/*" required>
+
+                <input type="submit" value="Add Student">
             </form>
         </div>
 
+        <!-- View and Manage Students -->
+        <div id="studentList">
+            <!-- Display Students Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Course</th>
+                        <th>Year Level</th>
+                        <th>Skills</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Fetch and Display Students from the Database -->
+                    <?php
+                    // Fetch students from the database and display them in rows
+                    // Customize this part based on your database connection and query
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        echo "<tr>";
+                        echo "<td>{$row['id']}</td>";
+                        echo "<td>{$row['first_name']}</td>";
+                        echo "<td>{$row['last_name']}</td>";
+                        echo "<td>{$row['course']}</td>";
+                        echo "<td>{$row['year_level']}</td>";
+                        echo "<td>{$row['skills']}</td>";
+                        echo "<td>{$row['email']}</td>";
+                        echo "<td><button class='actions' onclick=\"editStudent({$row['id']})\">Edit</button> <button class='action' onclick=\"deleteStudent({$row['id']})\">Delete</button></td>";
+                        echo "</tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div id="JobApplications" class="tabcontent">
-        <h3>Job Applications</h3>
-        <p>Track your personal job applications here.</p>
+    <div id="AcademicRecords" class="tabcontent">
+        <h1>Academic Records</h1>
+        <!-- Add New Academic Record Form -->
+        <div id="addAcademicRecordForm" style="display: none;">
+            <h2>Add New Academic Record</h2>
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                <!-- Add fields for academic record details -->
+                <!-- Example: -->
+                <label for="course_name">Course Name:</label>
+                <input type="text" name="course_name" required>
+
+                <label for="grade">Grade:</label>
+                <input type="text" name="grade" required>
+
+                <input type="submit" value="Add Academic Record">
+            </form>
+        </div>
+
+        <!-- View and Manage Academic Records -->
+        <div id="academicRecordList">
+            <!-- Display Academic Records Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Course Name</th>
+                        <th>Grade</th>
+                        <!-- Add more fields as needed -->
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Fetch and Display Academic Records from the Database -->
+                    <?php
+                    // Fetch academic records from the database and display them in rows
+                    // Customize this part based on your database connection and query
+                    while ($academicRecord = mysqli_fetch_assoc($academicRecordsResult)) {
+                        echo "<tr>";
+                        echo "<td>{$academicRecord['id']}</td>";
+                        echo "<td>{$academicRecord['course_name']}</td>";
+                        echo "<td>{$academicRecord['grade']}</td>";
+                        <!-- Add more fields as needed -->
+                        echo "<td><button class='actions' onclick='editAcademicRecord({$academicRecord['id']})'>Edit</button> <button class='action' onclick='deleteAcademicRecord({$academicRecord['id']})'>Delete</button></td>";
+                        echo "</tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div id="CareerResources" class="tabcontent">
-        <h3>Career Resources</h3>
-        <p>Explore resources to enhance your career knowledge.</p>
+    <div id="CareerGuidance" class="tabcontent">
+        <h1>Career Guidance</h1>
+        <!-- Add New Career Guidance Form -->
+        <div id="addCareerGuidanceForm" style="display: none;">
+            <h2>Add New Career Guidance</h2>
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                <!-- Add fields for career guidance details -->
+                <!-- Example: -->
+                <label for="counselor_name">Counselor Name:</label>
+                <input type="text" name="counselor_name" required>
+
+                <label for="advice">Advice:</label>
+                <textarea name="advice" rows="4" cols="50" required></textarea>
+
+                <input type="submit" value="Add Career Guidance">
+            </form>
+        </div>
+
+        <!-- View and Manage Career Guidance -->
+        <div id="careerGuidanceList">
+            <!-- Display Career Guidance Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Counselor Name</th>
+                        <th>Advice</th>
+                        <!-- Add more fields as needed -->
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Fetch and Display Career Guidance from the Database -->
+                    <?php
+                    // Fetch career guidance records from the database and display them in rows
+                    // Customize this part based on your database connection and query
+                    while ($careerGuidance = mysqli_fetch_assoc($careerGuidanceResult)) {
+                        echo "<tr>";
+                        echo "<td>{$careerGuidance['id']}</td>";
+                        echo "<td>{$careerGuidance['counselor_name']}</td>";
+                        echo "<td>{$careerGuidance['advice']}</td>";
+                        <!-- Add more fields as needed -->
+                        echo "<td><button class='actions' onclick='editCareerGuidance({$careerGuidance['id']})'>Edit</button> <button class='action' onclick='deleteCareerGuidance({$careerGuidance['id']})'>Delete</button></td>";
+                        echo "</tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div id="AlignmentMonitoring" class="tabcontent">
-        <h3>Alignment Monitoring</h3>
-        <p>Provide a section to monitor and update career alignment with your courses.</p>
+    <div id="JobPostings" class="tabcontent">
+        <h1>Job Postings</h1>
+        <!-- Add New Job Posting Form -->
+        <div id="addJobPostingForm" style="display: none;">
+            <h2>Add New Job Posting</h2>
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                <!-- Add fields for job posting details -->
+                <label for="job_title">Job Title:</label>
+                <input type="text" name="job_title" required>
+
+                <label for="employer">Employer:</label>
+                <input type="text" name="employer" required>
+
+                <label for="job_description">Job Description:</label>
+                <textarea name="job_description" rows="4" cols="50" required></textarea>
+
+                <input type="submit" value="Add Job Posting">
+            </form>
+        </div>
+
+        <!-- View and Manage Job Postings -->
+        <div id="jobPostingList">
+            <!-- Display Job Postings Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Job Title</th>
+                        <th>Employer</th>
+                        <th>Job Description</th>
+                        <!-- Add more fields as needed -->
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Fetch and Display Job Postings from the Database -->
+                    <?php
+                    // Fetch job postings from the database and display them in rows
+                    // Customize this part based on your database connection and query
+                    while ($jobPosting = mysqli_fetch_assoc($jobPostingsResult)) {
+                        echo "<tr>";
+                        echo "<td>{$jobPosting['id']}</td>";
+                        echo "<td>{$jobPosting['job_title']}</td>";
+                        echo "<td>{$jobPosting['employer']}</td>";
+                        echo "<td>{$jobPosting['job_description']}</td>";
+                        <!-- Add more fields as needed -->
+                        echo "<td><button class='actions' onclick='editJobPosting({$jobPosting['id']})'>Edit</button> <button class='action' onclick='deleteJobPosting({$jobPosting['id']})'>Delete</button></td>";
+                        echo "</tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <script>
-        // Function to open or close the update form
-        function openUpdateForm() {
-            var updateForm = document.getElementById("updateForm");
-            if (updateForm.style.display === "none" || updateForm.style.display === "") {
-                updateForm.style.display = "block";
-            } else {
-                updateForm.style.display = "none";
-            }
-        }
+    <div id="ProgressMonitoring" class="tabcontent">
+        <h1>Progress Monitoring</h1>
+    
+        <!-- Update Progress Bars Form -->
+        <div id="updateProgressBarsForm" style="display: none;">
+            <h2>Update Progress Bars</h2>
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                <!-- Add fields for progress bar updates -->
+                <!-- Example: -->
+                <label for="student_id">Student ID:</label>
+                <input type="text" name="student_id" required>
+    
+                <label for="progress">Progress (in percentage):</label>
+                <input type="number" name="progress" min="0" max="100" required>
+    
+                <input type="submit" value="Update Progress Bars">
+            </form>
+        </div>
+    
+        <!-- View Progress Bars -->
+        <div id="progressBars">
+            <!-- Display Progress Bars -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Progress</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Fetch and Display Progress Bars from the Database -->
+                    <?php
+                    // Fetch progress bars from the database and display them in rows
+                    // Customize this part based on your database connection and query
+                    while ($progressBar = mysqli_fetch_assoc($progressBarsResult)) {
+                        echo "<tr>";
+                        echo "<td>{$progressBar['student_id']}</td>";
+                        echo "<td>{$progressBar['progress']}%</td>";
+                        <!-- Add more fields as needed -->
+                        echo "<td><button class='actions' onclick='editProgressBars({$progressBar['id']})'>Edit</button> <button class='action' onclick='deleteProgressBars({$progressBar['id']})'>Delete</button></td>";
+                        echo "</tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
 
-        // Function to update the profile image when a new image is selected
-        function updateProfileImage(input) {
-            var profileImage = document.getElementById("profileImage");
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    profileImage.src = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
-        }
-
-        // Get the element with id="defaultOpen" and click on it
-        document.getElementById("defaultOpen").click();
-    </script>
-
+    <div id="AlumniTracking" class="tabcontent">
+        <h1>Alumni Tracking</h1>
+    
+        <!-- Track Alumni Activities -->
+        <div id="alumniActivities">
+            <!-- Display Alumni Activities Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Alumni ID</th>
+                        <th>Name</th>
+                        <th>Job Applications</th>
+                        <th>Positions Held</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Fetch and Display Alumni Activities from the Database -->
+                    <?php
+                    // Fetch alumni activities from the database and display them in rows
+                    // Customize this part based on your database connection and query
+                    while ($alumniActivity = mysqli_fetch_assoc($alumniActivitiesResult)) {
+                        echo "<tr>";
+                        echo "<td>{$alumniActivity['alumni_id']}</td>";
+                        echo "<td>{$alumniActivity['name']}</td>";
+                        echo "<td>{$alumniActivity['job_applications']}</td>";
+                        echo "<td>{$alumniActivity['positions_held']}</td>";
+                        <!-- Add more fields as needed -->
+                        echo "<td><button class='actions' onclick='editAlumniActivities({$alumniActivity['id']})'>Edit</button> <button class='action' onclick='deleteAlumniActivities({$alumniActivity['id']})'>Delete</button></td>";
+                        echo "</tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="js/index.js"></script>
 </body>
 </html>
