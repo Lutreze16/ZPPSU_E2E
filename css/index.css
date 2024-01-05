@@ -111,7 +111,7 @@
   .nav-bar .account:hover ul.submenu_account {
     top: 50px;
     display: block;
-    width: 415px;
+    width: 400px;
     height: 155px;
     background-color: #ddb041;
   }
@@ -165,3 +165,4 @@
     font-family: "Graduate-Regular", sans-serif;
     color: #a52424;
   }
+  
