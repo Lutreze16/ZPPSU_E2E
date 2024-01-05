@@ -5,12 +5,22 @@ body {
     font-family: "Lato", sans-serif;
 }
 
+img {
+    height: 80px;
+    width: 80px;
+    margin: auto;
+    margin-top: 50px;
+}
+
 /* Style the tab */
 .tab {
     float: left;
     background-color: #800000;
     width: 30%;
     height: 1035px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Style the buttons inside the tab */
@@ -81,8 +91,6 @@ h1, label {
 
 h4 {
     color: #f1f1f1;
-    text-align: center;
-    margin-bottom: 30px;
 }
 
 /* Add these styles to your existing CSS */
@@ -96,7 +104,7 @@ h4 {
     margin-top: 20px;
 }
 
-form {
+.tabcontent form {
     display: flex;
     flex-direction: column;
 }
@@ -106,7 +114,7 @@ form label {
     font-weight: bold;
 }
 
-form input,
+.tabcontent form input[type="text"],
 form select {
     width: 100%;
     padding: 8px;
@@ -117,7 +125,7 @@ form select {
 }
 
 /* Style the submit button */
-form input[type="submit"] {
+.tabcontent form input[type="submit"] {
     background-color: #6d0101;
     color: #fff;
     padding: 10px;
@@ -126,7 +134,7 @@ form input[type="submit"] {
     cursor: pointer;
 }
 
-form input[type="submit"]:hover {
+.tabcontent form input[type="submit"]:hover {
     background-color: #dcab2d;
 }
 
@@ -141,4 +149,89 @@ form input[type="submit"]:hover {
     background-color: #f1f1f1;
     padding: 15px;
     border-radius: 5px;
+}
+
+/* Add this to your existing CSS or customize as needed */
+
+/* Style for the academic records table */
+.academic-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.academic-table th, .academic-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.academic-table th {
+    background-color: #f2f2f2;
+}
+
+.academic-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.academic-table tr:hover {
+    background-color: #ddd;
+}
+
+#aptitudeForm {
+    margin-top: 20px;
+    max-width: 500px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="radio"],
+select {
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: #6d0101;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Results styling */
+#aptitudeResults {
+    display: none;
+    margin-top: 20px;
+    background-color: #acd5ac;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+h2 {
+    color: #397a3b;
+}
+
+p {
+    font-size: 18px;
+}
+
+#careerFieldResult {
+    font-weight: bold;
+}
+
+#recommendationResult {
+    font-style: italic;
+}
+
+textarea {
+    background-color: #f1f1f1;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 5px;
+    resize: none;
 }
