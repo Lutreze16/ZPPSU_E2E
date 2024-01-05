@@ -1,7 +1,8 @@
 <?php
 include('config.php');
 
-session_start();
+session_start(); // Add this line
+
 $alumniEmail = isset($_SESSION['alumni_email']) ? $_SESSION['alumni_email'] : null;
 
 if (!$alumniEmail) {
