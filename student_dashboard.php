@@ -1,106 +1,57 @@
 <?php
-include('config.php');
-
 session_start();
-$studentID = isset($_SESSION['student_id']) ? $_SESSION['student_id'] : null;
 
-$firstName = "";
-$lastName = "";
-$studentIDNumber = "";
-$course = "";
-$email = "";
-$skills = "";
-$profileImage = "img/profile.png";
+// Include database connection and configuration
+include 'config.php';
 
-// Fetch student information
-if ($studentID) {
-    $sql = "SELECT first_name, last_name, student_id, course, email, skills, year_level, profile_image FROM students WHERE id = $studentID";
-    $result = $conn->query($sql);
+$errorMessage = '';
 
-    if ($result && $result->num_rows > 0) {
-        $studentInfo = $result->fetch_assoc();
-        $firstName = $studentInfo['first_name'];
-        $lastName = $studentInfo['last_name'];
-        $studentIDNumber = $studentInfo['student_id'];
-        $course = $studentInfo['course'];
-        $email = $studentInfo['email'];
-        $skills = $studentInfo['skills'];
-        $year_level = $studentInfo['year_level'];
-
-        // Check if 'profile_image' key exists before accessing it
-        $profileImage = isset($studentInfo['profile_image']) ? $studentInfo['profile_image'] : $profileImage;
-    } else {
-        // Handle error or redirect to login if no student is found
-    }
-} else {
+// Check if the user is logged in
+if (!isset($_SESSION['student_id'])) {
     header("Location: login_student.php");
     exit();
 }
 
-// Handle profile update and image upload
+// Fetch user details from the session
+$studentIDNumber = $_SESSION['student_id'];
+$firstName = $_SESSION['first_name'];
+$lastName = $_SESSION['last_name'];
+$course = $_SESSION['course'];
+$year_level = $_SESSION['year_level'];
+$skills = $_SESSION['skills'];
+
+// Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $newFirstName = $_POST['new_first_name'];
-    $newLastName = $_POST['new_last_name'];
-    $newSkills = $_POST['new_skills'];
-    $newEmail = $_POST['new_email']; // Add this line to capture the new email
+    // Retrieve form data
+    $newFirstName = htmlspecialchars($_POST['new_first_name']);
+    $newLastName = htmlspecialchars($_POST['new_last_name']);
+    $newStudentID = htmlspecialchars($_POST['new_student_id']);
+    $newYearLevel = htmlspecialchars($_POST['new_year_level']);
+    $newCourse = htmlspecialchars($_POST['new_course']);
+    $newSkills = htmlspecialchars($_POST['new_skills']);
 
-    if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
-        $imageTmpName = $_FILES['profile_image']['tmp_name'];
-        $imageName = $_FILES['profile_image']['name'];
-        $imagePath = "ZPPSU-E2E/uploads/" . $imageName;
+    // Update the user information in the database
+    $stmt = $conn->prepare("UPDATE students SET first_name=?, last_name=?, student_id=?, year_level=?, course=?, skills=? WHERE student_id=?");
+    $stmt->bind_param("ssissss", $newFirstName, $newLastName, $newStudentID, $newYearLevel, $newCourse, $newSkills, $studentIDNumber);
 
-        // Ensure the directory exists
-        if (!file_exists("ZPPSU-E2E/uploads/")) {
-            mkdir("ZPPSU-E2E/uploads/", 0755, true);
-        }
+    if ($stmt->execute()) {
+        // Update session variables as well
+        $_SESSION['first_name'] = $newFirstName;
+        $_SESSION['last_name'] = $newLastName;
+        $_SESSION['student_id'] = $newStudentID;
+        $_SESSION['year_level'] = $newYearLevel;
+        $_SESSION['course'] = $newCourse;
+        $_SESSION['skills'] = $newSkills;
 
-        if (!move_uploaded_file($imageTmpName, $imagePath)) {
-            error_log("File move failed: " . $imagePath);
-        }
-
-        // Update the profile image path in the database
-        $sqlUpdateImage = "UPDATE students SET profile_image = '$imagePath' WHERE id = $studentID";
-        $conn->query($sqlUpdateImage);
-
-        // Update the profile image variable
-        $profileImage = $imagePath;
-    }
-
-    // Add more fields as needed and update the SQL query
-    $sqlUpdate = "UPDATE students SET first_name = '$newFirstName', last_name = '$newLastName', skills = '$newSkills', email = '$newEmail' WHERE id = $studentID";
-
-    if ($conn->query($sqlUpdate) === TRUE) {
-        // Update successful
-        $firstName = $newFirstName;
-        $lastName = $newLastName;
-        $skills = $newSkills;
-        $email = $newEmail; // Update the email variable
-
-        // Fetch updated student information
-        $sqlUpdatedInfo = "SELECT first_name, last_name, student_id, course, email, skills, profile_image FROM students WHERE id = $studentID";
-        $resultUpdatedInfo = $conn->query($sqlUpdatedInfo);
-
-        if ($resultUpdatedInfo && $resultUpdatedInfo->num_rows > 0) {
-            $studentInfo = $resultUpdatedInfo->fetch_assoc();
-            $firstName = $studentInfo['first_name'];
-            $lastName = $studentInfo['last_name'];
-            $studentIDNumber = $studentInfo['student_id'];
-            $course = $studentInfo['course'];
-            $email = $studentInfo['email'];
-            $skills = $studentInfo['skills'];
-
-            // Update the profile image variable
-            $profileImage = isset($studentInfo['profile_image']) ? $studentInfo['profile_image'] : $profileImage;
-        } else {
-            // Handle error or redirect to login if no student is found
-        }
+        // Display success message or handle redirection
+        $successMessage = "Information updated successfully!";
     } else {
-        // Handle update error
-        echo "Error updating record: " . $conn->error;
+        $errorMessage = "Error updating information. Please try again.";
     }
-}
 
-$conn->close();
+    $stmt->close();
+    $conn->close();
+}
 ?>
 
 <!DOCTYPE html>
@@ -109,14 +60,15 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="icon" href="img/zppsu-seal.png" type="image/png">
+    <title>Student | Dashboard</title>
 </head>
 <body>
 
     <div class="tab">
         <div class="information">
-            <!--<img id="profileImage" src="<?php echo $profileImage; ?>">-->
             <img id="profileImage" src="img/user.png">
-            <h2><?php echo $firstName . ' ' . $lastName; ?></h2>
+            <h3><?php echo $firstName . ' ' . $lastName; ?></h3>
             <h4 style="text-align: center;">Student ID: <?php echo $studentIDNumber; ?></h4>
         </div>
         <button class="tablinks" onclick="openTab(event, 'MyInfo')" id="defaultOpen">My Information</button>
@@ -133,6 +85,8 @@ $conn->close();
 
     <!-- Main Content -->
 
+
+    <!-- My information feature -->
     <div id="MyInfo" class="tabcontent">
 
         <div class="info">
@@ -142,7 +96,6 @@ $conn->close();
             <p>Student ID: <?php echo $studentIDNumber; ?></p>
             <p>Year Level: <?php echo $year_level; ?></p>
             <p>Course: <?php echo $course; ?></p>
-            <p>Email: <?php echo $email; ?></p>
             <p>Skills: <?php echo $skills; ?></p>
         </div>
 
@@ -150,9 +103,6 @@ $conn->close();
 
         <div id="updateForm" style="display: none;">
             <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
-                <!-- Profile Image Upload -->
-                <label for="profile_image">Profile Image:</label>
-                <input type="file" name="profile_image" accept="image/*" onchange="updateProfileImage(this)" id="profile_image">
 
                 <label for="new_first_name">New First Name:</label>
                 <input type="text" name="new_first_name" value="<?php echo $firstName; ?>" required id="new_first_name">
@@ -175,18 +125,12 @@ $conn->close();
                 <label for="new_course">New Course:</label>
                 <input type="text" name="new_course" value="<?php echo $course; ?>" required id="new_course">
 
-                <label for="new_email">New Email:</label>
-                <input type="text" name="new_email" value="<?php echo $email; ?>" required id="new_email">
-
                 <label for="new_skills">New Skills:</label>
                 <input type="text" name="new_skills" value="<?php echo $skills; ?>" required id="new_skills">
-
-                <!-- Add more fields for additional information -->
 
                 <input type="submit" value="Update">
             </form>
         </div>
-
     </div>
 
     <div id="Academic" class="tabcontent">
@@ -379,18 +323,6 @@ $conn->close();
                 updateForm.style.display = "block";
             } else {
                 updateForm.style.display = "none";
-            }
-        }
-
-        // Function to update the profile image when a new image is selected
-        function updateProfileImage(input) {
-            var profileImage = document.getElementById("profileImage");
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    profileImage.src = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
             }
         }
 
