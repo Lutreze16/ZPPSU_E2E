@@ -41,6 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alumni Registration</title>
     <link rel="stylesheet" type="text/css" href="css/signup.css">
+    <link rel="icon" href="img/zppsu-seal.png" type="image/png">
 </head>
 <body>
     <div class="container">
