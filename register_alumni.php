@@ -1,33 +1,37 @@
 <?php
-include('config.php'); // Include the database connection file
+// Include the database configuration file
+include 'config.php';
 
-// Check if the connection is successful
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+// Initialize error message
+$errorMessage = '';
 
+// Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Check if form fields are set
-    $first_name = isset($_POST["first_name"]) ? $_POST["first_name"] : "";
-    $last_name = isset($_POST["last_name"]) ? $_POST["last_name"] : "";
-    $email = isset($_POST["email"]) ? $_POST["email"] : "";
-    $graduation_year = isset($_POST["graduation_year"]) ? $_POST["graduation_year"] : "";
-    $program = isset($_POST["program"]) ? $_POST["program"] : "";
+    // Get form values
+    $alumni_first_name = mysqli_real_escape_string($conn, $_POST['alumni_first_name']);
+    $alumni_last_name = mysqli_real_escape_string($conn, $_POST['alumni_last_name']);
+    $alumni_email = mysqli_real_escape_string($conn, $_POST['alumni_email']);
+    $alumni_graduation_year = mysqli_real_escape_string($conn, $_POST['alumni_graduation_year']);
+    $alumni_password = password_hash(mysqli_real_escape_string($conn, $_POST['alumni_password']), PASSWORD_DEFAULT); // Hash the password
+    $alumni_program = mysqli_real_escape_string($conn, $_POST['alumni_program']);
 
-    // SQL query to insert data into the database
-    $sql = "INSERT INTO alumni (first_name, last_name, email, graduation_year, program) 
-            VALUES ('$first_name', '$last_name', '$email', $graduation_year, '$program')";
+    // Insert data into the database
+    $query = "INSERT INTO alumni (alumni_first_name, alumni_last_name, alumni_email, alumni_graduation_year, alumni_password, alumni_program) VALUES ('$alumni_first_name', '$alumni_last_name', '$alumni_email', '$alumni_graduation_year', '$alumni_password', '$alumni_program')";
 
-    // Execute the query
-    if ($conn->query($sql) === TRUE) {
-        echo "Registration successful!";
+    $result = mysqli_query($conn, $query);
+
+    // Check if the query was successful
+    if ($result) {
+        // Redirect to login_alumni.php
+        header("Location: login_alumni.php");
+        exit();
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        echo "Error: " . mysqli_error($conn);
     }
-}
 
-// Close the database connection
-$conn->close();
+    // Close database connection
+    mysqli_close($conn);
+}
 ?>
 
 <!DOCTYPE html>
@@ -41,14 +45,15 @@ $conn->close();
 <body>
     <div class="container">
         <h2>Alumni Registration</h2>
-        <form action="process_alumni.php" method="post">
+        <form action="register_alumni.php" method="post">
             <!-- Alumni registration form fields go here -->
-            <input type="text" name="first_name" placeholder="First Name" required>
-            <input type="text" name="last_name" placeholder="Last Name" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="number" name="graduation_year" placeholder="Graduation Year" required>
+            <input type="text" name="alumni_first_name" placeholder="First Name" required>
+            <input type="text" name="alumni_last_name" placeholder="Last Name" required>
+            <input type="email" name="alumni_email" placeholder="Email" required>
+            <input type="number" name="alumni_graduation_year" placeholder="Graduation Year" required>
+            <input type="password" name="alumni_password" placeholder="Password" required>
             <label>Program:</label>
-            <select name="program">
+            <select name="alumni_program">
                 <option value="BS-InfoTech">BS Information Technology</option>
                 <option value="BS-CompTech">BS Computer Technology</option>
                 <option value="BEED">Bachelor of Elementary Education</option>
