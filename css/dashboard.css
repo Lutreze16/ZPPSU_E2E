@@ -8,8 +8,14 @@ body {
 img {
     height: 80px;
     width: 80px;
-    margin: auto;
-    margin-top: 50px;
+    display: block;
+    margin: 50px auto 20px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.information {
+    text-align: center;
 }
 
 /* Style the tab */
@@ -89,7 +95,7 @@ h1, label {
     color: #800000;
 }
 
-h4 {
+h3, h4{
     color: #f1f1f1;
     margin: 5px;
 }
