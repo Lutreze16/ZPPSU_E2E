@@ -1,44 +1,44 @@
 <?php
-session_start();
+include 'config.php';
 
-if (isset($_SESSION['student_id'])) {
-    header("Location: student_dashboard.php");
-    exit();
-}
-
-$errorMessage = "";
+$errorMessage = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    include('config.php');
+    $student_id = htmlspecialchars($_POST['student_id']);
+    $password = htmlspecialchars($_POST['password']);
 
-    $input_student_id = isset($_POST["student_id"]) ? $_POST["student_id"] : "";
-    $input_password = isset($_POST["password"]) ? $_POST["password"] : "";
-
-    $sql = "SELECT student_id, password FROM students WHERE student_id = '$input_student_id'";
-    $result = $conn->query($sql);
-
-    if ($result === false) {
-        die("Query failed: " . $conn->error);
-    }
+    $stmt = $conn->prepare("SELECT id, first_name, last_name, student_id, course, year_level, skills, password FROM students WHERE student_id = ?");
+    $stmt->bind_param("s", $student_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows == 1) {
         $row = $result->fetch_assoc();
-        $stored_password = $row['password'];
-
-        if (password_verify($input_password, $stored_password)) {
+        if (password_verify($password, $row['password'])) {
+            session_start();
             $_SESSION['student_id'] = $row['student_id'];
+            $_SESSION['first_name'] = $row['first_name'];
+            $_SESSION['last_name'] = $row['last_name'];
+            $_SESSION['course'] = $row['course'];
+            $_SESSION['year_level'] = $row['year_level'];
+            $_SESSION['skills'] = $row['skills'];
+
+            // Redirect to the dashboard
             header("Location: student_dashboard.php");
             exit();
         } else {
             $errorMessage = "Invalid password";
         }
     } else {
-        $errorMessage = "User not found";
+        $errorMessage = "Student not found";
     }
 
+    $stmt->close();
     $conn->close();
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -47,6 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/login.css">
     <title>Login | For Students</title>
+    <link rel="icon" href="img/zppsu-seal.png" type="image/png">
 </head>
 <body>
     <div class="container">
@@ -56,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Login</button>
         </form>
-        <?php if (!empty($errorMessage)) echo "<p>$errorMessage</p>"; ?>
+        <?php if (!empty($errorMessage)) echo "<p style='color: red;'>$errorMessage</p>"; ?>
     </div>
 </body>
 </html>
