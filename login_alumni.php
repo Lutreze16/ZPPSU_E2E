@@ -1,54 +1,52 @@
 <?php
-// Start the session before any output
-session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-// Include database configuration
-include('config.php');
+// Include the database configuration file
+include 'config.php';
 
-// Error message variable
-$errorMessage = "";
+// Initialize error message
+$errorMessage = '';
 
+// Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $alumniEmail = isset($_POST["alumni_email"]) ? trim($_POST["alumni_email"]) : "";
-    $password = isset($_POST["alumni_password"]) ? trim($_POST["alumni_password"]) : "";
+    // Get form values
+    $alumni_email = mysqli_real_escape_string($conn, $_POST['alumni_email']);
+    $alumni_password = mysqli_real_escape_string($conn, $_POST['alumni_password']);
 
-    if (empty($alumniEmail) || empty($password)) {
-        $errorMessage = "Email and password are required";
-    } else {
-        $sql = "SELECT alumni_email, alumni_password FROM alumni WHERE alumni_email = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $alumniEmail);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    // Retrieve password from the database based on the entered email
+    $query = "SELECT alumni_password FROM alumni WHERE alumni_email = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $alumni_email);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-        if ($result && $result->num_rows > 0) {
+    if ($result) {
+        if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            if (password_verify($password, $row['alumni_password'])) {
+
+            // Verify the entered password with the hashed password from the database
+            if (password_verify($alumni_password, $row['alumni_password'])) {
+                // Successful login, redirect to alumni_dashboard.php
                 session_start();
-                $_SESSION['alumni_email'] = $row['alumni_email'];
-
-                // Prevent browser caching
-                header("Cache-Control: no-cache, no-store, must-revalidate");
-                header("Pragma: no-cache");
-                header("Expires: 0");
-
-                // Redirect to the dashboard
+                $_SESSION['alumni_email'] = $alumni_email;
                 header("Location: alumni_dashboard.php");
                 exit();
             } else {
                 $errorMessage = "Invalid password";
             }
         } else {
-            $errorMessage = "Invalid email";
+            $errorMessage = "Email not found";
         }
-
-        $stmt->close();
+    } else {
+        echo "Error: " . mysqli_error($conn);
     }
+
+    // Close database connection
+    $stmt->close();
+    mysqli_close($conn);
 }
-
-$conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -59,7 +57,6 @@ $conn->close();
     <title>Alumni Login</title>
 </head>
 <body>
-
     <!-- Container -->
     <div class="container">
         <h2>Alumni Login</h2>
@@ -70,8 +67,9 @@ $conn->close();
 
             <button type="submit">Log In</button>
         </form>
-        <div class="error-message"><?php echo $errorMessage; ?></div>
+        <?php if (!empty($errorMessage)) : ?>
+            <div class="error-message"><?php echo $errorMessage; ?></div>
+        <?php endif; ?>
     </div>
-
 </body>
 </html>
