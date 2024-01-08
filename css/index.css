@@ -1,168 +1,255 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  .header {
-    background: #800000;
-    width: 100%;
-    height: 100px;
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-  
-  .img {
-    width: 80px;
-    height: 80px;
-    position: relative;
-    left: 30px;
-  }
-  
-  .enrollment-to-employment-system-zamboanga-peninsula-polytechnic-state-university {
-    color: #dcab2d;
-    text-align: left;
-    position: relative;
-    width: 838px;
-    height: 70px;
-    left: 50px;
-  }
-  
-  .enrollment-to-employment-system-zamboanga-peninsula-polytechnic-state-university-span {
-    color: #dcab2d;
-    font-family: "Graduate-Regular", sans-serif;
-    font-size: 30px;
-    font-weight: 400;
-  }
-  
-  .enrollment-to-employment-system-zamboanga-peninsula-polytechnic-state-university-span2 {
-    color: #dcab2d;
-    font-family: "Graduate-Regular", sans-serif;
-    font-size: 20px;
-    font-weight: 400;
-  }
-  /* Main navigation bar styles */
-  .nav-bar {
-    background: #dcab2d;
-    width: 100%;
-    height: 50px;
-    position: relative;
-    text-align: center;
-    z-index: 2;
-  }
-  
-  .nav-bar a {
-    color: #800000;
-    text-align: left;
-    text-decoration: none;
-    font-family: "Arial-Regular", sans-serif;
-    font-size: 26px;
-    font-weight: 400;
-    position: relative;
-    margin: 0 40px;
-    top: 12px;
-  }
-  
-  /* Dropdown styles */
-  .nav-bar ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .nav-bar ul li {
-    display: inline-block;
-    margin-right: 25px;
-    position: relative;
-  }
-  
-  /* Alumni dropdown styles */
-  .nav-bar .alumni ul.submenu_alumni {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #dcab2d;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    padding: 15px 0;
-  }
-  
-  .nav-bar .alumni:hover ul.submenu_alumni {
-    top: 50px;
-    display: block;
-    width: 420px;
-    height: 135px;
-    background-color: #ddb041;
-    border-radius: 15px;
-  }
-  
-  /* Account dropdown styles */
-  .nav-bar .account ul.submenu_account {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #dcab2d;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-  }
-  
-  .nav-bar .account:hover ul.submenu_account {
-    top: 50px;
-    display: block;
-    width: 400px;
-    height: 155px;
-    background-color: #ddb041;
-  }
-  
-  /* Hover effect for better user experience */
-  .nav-bar a:hover {
-    background-color: #cd9f2a;
-    padding: 8px;
-  }
-  
-  
-  .menu-icon {
-    display: none;
-    cursor: pointer;
-  }
-  
-  .bar {
-    width: 30px;
-    height: 3px;
-    background-color: #800000;
-    margin: 6px 0;
-  }
-  
-  .container {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .side-content {
-    height: 600px;
-    width: 900px;
-    background-color: #a52424;
-    font-size: 65px;
-    text-align: right;
-    padding-top: 100px;
-    padding-bottom: 235px;
-    padding-left: 200px;
-    padding-right: 150px;
-    font-family: Helvetica;
-    color: #fff;
-  }
-  
-  .content {
-    height: 600px;
-    width: 1100px;
-    font-size: 30px;
-    padding-top: 100px;
-    padding-bottom: 240px;
-    padding-right: 150px;
-    padding-left: 125px;
-    font-family: "Graduate-Regular", sans-serif;
-    color: #a52424;
-  }
-  
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.header {
+  background: #800000;
+  width: 100%;
+  height: 100px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.img {
+  width: 80px;
+  height: 80px;
+  position: relative;
+  left: 30px;
+}
+
+.enrollment-to-employment-system-zamboanga-peninsula-polytechnic-state-university {
+  color: #dcab2d;
+  text-align: left;
+  position: relative;
+  width: 838px;
+  height: 70px;
+  left: 50px;
+}
+
+.enrollment-to-employment-system-zamboanga-peninsula-polytechnic-state-university-span {
+  color: #dcab2d;
+  font-family: "Graduate-Regular", sans-serif;
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.enrollment-to-employment-system-zamboanga-peninsula-polytechnic-state-university-span2 {
+  color: #dcab2d;
+  font-family: "Graduate-Regular", sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+}
+/* Main navigation bar styles */
+.nav-bar {
+  background: #dcab2d;
+  width: 100%;
+  height: 50px;
+  position: relative;
+  text-align: center;
+  z-index: 2;
+}
+
+.nav-bar a {
+  color: #800000;
+  text-align: left;
+  text-decoration: none;
+  font-family: "Arial-Regular", sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  position: relative;
+  margin: 0 40px;
+  top: 12px;
+}
+
+/* Dropdown styles */
+.nav-bar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-bar ul li {
+  display: inline-block;
+  margin-right: 25px;
+  position: relative;
+}
+
+/* Alumni dropdown styles */
+.nav-bar .alumni ul.submenu_alumni {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #dcab2d;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  padding: 15px 0;
+}
+
+.nav-bar .alumni:hover ul.submenu_alumni {
+  top: 50px;
+  display: block;
+  width: 420px;
+  height: 70px;
+  background-color: #ddb041;
+  border-radius: 15px;
+}
+
+/* Account dropdown styles */
+.nav-bar .account ul.submenu_account {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #dcab2d;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.nav-bar .account:hover ul.submenu_account {
+  top: 50px;
+  display: block;
+  width: 400px;
+  height: 155px;
+  background-color: #ddb041;
+}
+
+/* Hover effect for better user experience */
+.nav-bar a:hover {
+  background-color: #cd9f2a;
+  padding: 8px;
+}
+
+
+.menu-icon {
+  display: none;
+  cursor: pointer;
+}
+
+.bar {
+  width: 30px;
+  height: 3px;
+  background-color: #800000;
+  margin: 6px 0;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.side-content {
+  height: 600px;
+  width: 900px;
+  background-color: #a52424;
+  font-size: 65px;
+  text-align: right;
+  padding-top: 100px;
+  padding-bottom: 235px;
+  padding-left: 200px;
+  padding-right: 150px;
+  font-family: Helvetica;
+  color: #fff;
+}
+
+.content {
+  height: 600px;
+  width: 1100px;
+  font-size: 30px;
+  padding-top: 100px;
+  padding-bottom: 240px;
+  padding-right: 150px;
+  padding-left: 125px;
+  font-family: "Graduate-Regular", sans-serif;
+  color: #a52424;
+}
+
+#programs {
+  padding: 75px;
+  background-color: #f5f5f5;
+  font-family: "Arial-Regular", sans-serif;
+}
+
+#programs h2, #programs h3, #programs h4,
+#events h2, #events h3, #events h4 {
+  color: #800000;
+  margin-bottom: 20px;
+}
+
+#programs h1,
+#events h1 {
+color: #800000;
+}
+
+#programs p,
+#events p {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+#programs ul,
+#events ul {
+  list-style-type: disc;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+#programs ol,
+#events ol {
+  list-style-type: decimal;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+#events {
+padding: 99px;
+background-color: #fff;
+font-family: "Arial-Regular", sans-serif;
+}
+
+#admissions {
+padding: 75px;
+background-color: #f5f5f5;
+font-family: "Arial-Regular", sans-serif;
+}
+
+#admissions h1 {
+margin-bottom: 20px;
+color: #800000;
+}
+
+#admissions p {
+text-align: center;
+}
+
+#admissions form {
+max-width: 500px;
+margin: 0 auto;
+}
+
+#admissions label {
+display: block;
+margin-bottom: 5px;
+}
+
+#admissions input, #admissions select, #admissions textarea {
+width: 100%;
+padding: 8px;
+margin-bottom: 10px;
+box-sizing: border-box;
+}
+
+#admissions button {
+background-color: #800000;
+color: #fff;
+padding: 10px;
+border: none;
+cursor: pointer;
+}
+
+#admissions button:hover {
+color: #dcab2d;
+}
